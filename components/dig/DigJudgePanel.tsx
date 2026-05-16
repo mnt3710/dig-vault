@@ -118,7 +118,7 @@ export function DigJudgePanel() {
       {result ? (
         <article className="mt-6 rounded-xl border border-zinc-200 bg-zinc-50 p-4">
           <p className="text-sm text-zinc-500">Gemini verdict</p>
-          <p className="mt-2 inline-flex rounded-full px-3 py-1 text-sm font-semibold text-white">
+          <p className="mt-2 inline-flex text-sm font-semibold text-white">
             <span className={`rounded-full px-3 py-1 ${badgeColorMap[result.judgment]}`}>{result.judgment}</span>
           </p>
           <p className="mt-3 text-sm text-zinc-700">{result.reason}</p>

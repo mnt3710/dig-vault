@@ -97,7 +97,10 @@ export async function judgeImageWithGemini(imageDataUrl: string): Promise<JudgeR
   }
 
   const payload = (await response.json()) as GeminiResponse;
-  const text = payload.candidates?.[0]?.content?.parts?.find((part) => part.text)?.text;
+  const firstCandidate = payload.candidates?.[0];
+  const parts = firstCandidate?.content?.parts ?? [];
+  const textPart = parts.find((part) => part.text);
+  const text = textPart?.text;
 
   if (!text) {
     throw new Error("Gemini response did not contain text output");
