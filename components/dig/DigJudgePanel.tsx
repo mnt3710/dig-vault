@@ -11,6 +11,7 @@ const badgeColorMap: Record<JudgeResult["judgment"], string> = {
   PASS: "bg-zinc-700",
   TRY: "bg-violet-600",
 };
+const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
 
 export function DigJudgePanel() {
   const [imageDataUrl, setImageDataUrl] = useState<string>("");
@@ -24,6 +25,13 @@ export function DigJudgePanel() {
     const file = event.target.files?.[0];
 
     if (!file) {
+      return;
+    }
+
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
+      setImageDataUrl("");
+      setResult(null);
+      setError("Please upload an image smaller than 5MB.");
       return;
     }
 
