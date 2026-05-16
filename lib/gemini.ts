@@ -1,6 +1,7 @@
 import { JUDGMENT_VALUES, type JudgeResult } from "@/types";
 
 const GEMINI_MODEL = process.env.GEMINI_MODEL ?? "gemini-1.5-flash";
+const ALLOWED_MIME_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
 
 interface GeminiCandidate {
   content?: {
@@ -53,7 +54,7 @@ export async function judgeImageWithGemini(imageDataUrl: string): Promise<JudgeR
   const [prefix, data] = imageDataUrl.split(",");
   const mimeType = prefix.match(/^data:(image\/[^;]+);base64$/)?.[1];
 
-  if (!data || !mimeType) {
+  if (!data || !mimeType || !ALLOWED_MIME_TYPES.has(mimeType)) {
     throw new Error("Invalid image data URL format");
   }
 
