@@ -1,6 +1,7 @@
 import { JUDGMENT_VALUES, type JudgeResult } from "@/types";
 
 const GEMINI_MODEL = process.env.GEMINI_MODEL ?? "gemini-1.5-flash";
+// Keep this allowlist in sync with client/server upload validation to avoid unsupported formats.
 const ALLOWED_MIME_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
 
 interface GeminiCandidate {
