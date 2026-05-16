@@ -17,12 +17,7 @@ interface GeminiResponse {
 
 function normalizeJudgment(value: string): JudgeResult["judgment"] {
   const upper = value.trim().toUpperCase();
-
-  if (JUDGMENT_VALUES.includes(upper as JudgeResult["judgment"])) {
-    return upper as JudgeResult["judgment"];
-  }
-
-  return "HOLD";
+  return JUDGMENT_VALUES.find((judgment) => judgment === upper) ?? "HOLD";
 }
 
 function parseGeminiText(text: string): JudgeResult {
@@ -51,7 +46,7 @@ export async function judgeImageWithGemini(imageDataUrl: string): Promise<JudgeR
     throw new Error("Missing GEMINI_API_KEY");
   }
 
-  const [prefix, data] = imageDataUrl.split(",");
+  const [prefix, data = ""] = imageDataUrl.split(",", 2);
   const mimeType = prefix.match(/^data:(image\/[^;]+);base64$/)?.[1];
 
   if (!data || !mimeType || !ALLOWED_MIME_TYPES.has(mimeType)) {

@@ -1,5 +1,6 @@
 "use client";
 
+import { MAX_IMAGE_SIZE_BYTES } from "@/lib/constants";
 import { JUDGMENT_VALUES, type JudgeResult } from "@/types";
 import Image from "next/image";
 import { ChangeEvent, FormEvent, useMemo, useState } from "react";
@@ -11,8 +12,6 @@ const badgeColorMap: Record<JudgeResult["judgment"], string> = {
   PASS: "bg-zinc-700",
   TRY: "bg-violet-600",
 };
-const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
-
 export function DigJudgePanel() {
   const [imageDataUrl, setImageDataUrl] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
