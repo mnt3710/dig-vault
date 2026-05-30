@@ -17,8 +17,6 @@ interface GeminiResponse {
   candidates?: GeminiCandidate[];
 }
 
-type JsonObject = Record<string, unknown>;
-
 function normalizeJudgment(value: string): JudgeResult["judgment"] {
   const upper = value.trim().toUpperCase();
   return JUDGMENT_VALUES.find((judgment) => judgment === upper) ?? "HOLD";
@@ -45,95 +43,7 @@ function parseGeminiText(text: string): JudgeResult {
       };
     }
   } catch {
-    return null;
-  }
-}
-
-function extractFirstJsonObject(text: string): string | null {
-  let startIndex = -1;
-  let depth = 0;
-  let inString = false;
-  let isEscaped = false;
-
-  for (let index = 0; index < text.length; index += 1) {
-    const char = text[index];
-
-    if (inString) {
-      if (isEscaped) {
-        isEscaped = false;
-        continue;
-      }
-
-      if (char === "\\") {
-        isEscaped = true;
-        continue;
-      }
-
-      if (char === '"') {
-        inString = false;
-      }
-
-      continue;
-    }
-
-    if (char === '"') {
-      inString = true;
-      continue;
-    }
-
-    if (char === "{") {
-      if (depth === 0) {
-        startIndex = index;
-      }
-      depth += 1;
-      continue;
-    }
-
-    if (char === "}" && depth > 0) {
-      depth -= 1;
-
-      if (depth === 0 && startIndex >= 0) {
-        return text.slice(startIndex, index + 1);
-      }
-    }
-  }
-
-  return null;
-}
-
-function getParsedJudgePayload(text: string): JsonObject | null {
-  const trimmed = text.trim();
-  const codeFenceMatch = trimmed.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
-  const candidates = [
-    trimmed,
-    codeFenceMatch?.[1]?.trim() ?? null,
-    extractFirstJsonObject(trimmed),
-  ];
-
-  for (const candidate of candidates) {
-    if (!candidate) {
-      continue;
-    }
-
-    const parsed = parseJsonObject(candidate);
-    if (parsed) {
-      return parsed;
-    }
-  }
-
-  return null;
-}
-
-function parseGeminiText(text: string): JudgeResult {
-  const parsed = getParsedJudgePayload(text);
-  const judgmentValue = parsed?.judgment;
-  const reasonValue = parsed?.reason;
-
-  if (typeof judgmentValue === "string" && typeof reasonValue === "string" && reasonValue.trim()) {
-    return {
-      judgment: normalizeJudgment(judgmentValue),
-      reason: reasonValue.trim(),
-    };
+    // fall through to default
   }
 
   return {
