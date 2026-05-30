@@ -16,6 +16,49 @@ const badgeColorMap: Record<JudgeResult["judgment"], string> = {
   TRY: "bg-violet-600",
 };
 
+type JudgmentDef = { label: string; desc: string };
+
+const JUDGMENT_DEFS: Record<JudgeResult["judgment"], { en: JudgmentDef; ja: JudgmentDef }> = {
+  GRAB: {
+    en: { label: "GRAB", desc: "Instant buy — no hesitation. Priced well below market value with strong resale potential. Buy it even if the size isn't perfect." },
+    ja: { label: "GRAB", desc: "迷わず即買い。相場より大幅に安く、リセールでも大きな利益が見込める。サイズが合わなくても買うべき。" },
+  },
+  BUY: {
+    en: { label: "BUY", desc: "Good value. Priced fairly and worth adding to your wardrobe or flipping. Recommended if it fits your style." },
+    ja: { label: "BUY", desc: "買いの一品。価格は適正で、着用・転売どちらでもお得。スタイルに合えばおすすめ。" },
+  },
+  HOLD: {
+    en: { label: "HOLD", desc: "Uncertain. The price or condition is borderline. Worth it only if discounted further or if you really love the item." },
+    ja: { label: "HOLD", desc: "判断保留。価格や状態がボーダーライン。さらに値引きがあるか、本当に気に入った場合のみ検討を。" },
+  },
+  PASS: {
+    en: { label: "PASS", desc: "Skip it. Overpriced for its condition, poor resale potential, or too common to be worth picking up." },
+    ja: { label: "PASS", desc: "見送り推奨。状態に対して割高か、リセール価値が低い、またはありふれた商品。" },
+  },
+  TRY: {
+    en: { label: "TRY", desc: "Try before you decide. Fit and feel matter a lot for this item — the verdict depends on how it looks on you." },
+    ja: { label: "TRY", desc: "試着してから判断。フィット感や着心地が重要なアイテム。実際に着てみてから決めよう。" },
+  },
+};
+
+function JudgmentTooltip({ judgment, lang }: { judgment: JudgeResult["judgment"]; lang: "en" | "ja" }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLButtonElement>(null);
+  const def = JUDGMENT_DEFS[judgment][lang];
+
+  return (
+    <span className="relative inline-flex items-center">
+      <button
+        ref={ref}
+        type="button"
+        aria-label={`What is ${judgment}?`}
+        onClick={() => setOpen((v) => !v)}
+        onBlur={() => setOpen(false)}
+        className="ml-1.5 inline-flex h-4 w-4 items-center justify-center rounded-full border border-zinc-400 text-[10px] font-bold text-zinc-400 hover:border-zinc-600 hover:text-zinc-600 dark:border-zinc-500 dark:text-zinc-500 dark:hover:border-zinc-300 dark:hover:text-zinc-300"
+      >
+        i
+      </button>
+      {open && (
         <span className="absolute bottom-full left-0 z-50 mb-2 w-56 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-700 shadow-lg dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200">
           <span className="mb-1 block font-bold">{def.label}</span>
           {def.desc}
@@ -192,6 +235,7 @@ export function DigJudgePanel() {
           {JUDGMENT_VALUES.map((v) => (
             <span key={v} className="inline-flex items-center">
               <span className="font-semibold">{v}</span>
+              <JudgmentTooltip judgment={v} lang={lang} />
             </span>
           ))}
         </span>
@@ -350,6 +394,7 @@ export function DigJudgePanel() {
                     <span className={`inline-flex rounded-full px-3 py-1 text-xs font-bold text-white ${badgeColorMap[result.judgment]}`}>
                       {result.judgment}
                     </span>
+                    <JudgmentTooltip judgment={result.judgment} lang={lang} />
                   </span>
                 </td>
               </tr>
